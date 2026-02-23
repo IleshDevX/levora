@@ -41,6 +41,22 @@
 - Node.js (LTS)
 - MongoDB (running locally on port 27017)
 
+### Environment Variables (Local)
+
+Create a `.env` file in the `backend/` folder:
+
+```env
+PORT=5000
+MONGO_URI=mongodb://127.0.0.1:27017/levora
+NODE_ENV=development
+CLIENT_URL=http://localhost:5000
+```
+
+Or copy from the example:
+```bash
+cp backend/.env.example backend/.env
+```
+
 ### Installation
 
 ```bash
@@ -63,6 +79,43 @@ node server.js
 ```
 
 Then open: **http://localhost:5000**
+
+## Deployment Guide (Render + MongoDB Atlas)
+
+### Step 1: Push to GitHub
+
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/YOUR_USERNAME/levora.git
+git push -u origin main
+```
+
+### Step 2: Deploy on Render
+
+1. Go to **https://render.com** → Sign up with GitHub
+2. Click **"New +"** → **Web Service**
+3. Connect your `levora` GitHub repo
+4. Configure:
+   - **Root Directory**: `backend`
+   - **Build Command**: `npm install`
+   - **Start Command**: `node server.js`
+   - **Instance Type**: **Free**
+5. Click **"Environment"** → Add these variables:
+   - `MONGO_URI`: `mongodb+srv://ileshpatel666_db_user:GJs2lcGelHXB9ee0@levora.nwwavtx.mongodb.net/levora?retryWrites=true&w=majority`
+   - `NODE_ENV`: `production`
+6. Deploy and wait 2-3 minutes
+
+### Step 3: Seed Live Database
+
+In Render dashboard → Service Shell tab:
+```bash
+node seed.js
+```
+
+Your live app will be at: **https://levora.onrender.com**
 
 ## Demo Credentials
 
