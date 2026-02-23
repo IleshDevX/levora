@@ -71,14 +71,28 @@ app.use((err, req, res, next) => {
 });
 
 // ─── Connect to MongoDB & Start Server ───
-mongoose.connect(MONGO_URI)
+console.log('🔧 Environment Check:');
+console.log(`   PORT: ${PORT}`);
+console.log(`   NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
+console.log(`   MONGO_URI set: ${process.env.MONGO_URI ? 'YES ✓' : 'NO ✗ (using default)'}`);
+if (process.env.MONGO_URI) {
+    console.log(`   MONGO_URI preview: ${process.env.MONGO_URI.substring(0, 40)}...`);
+}
+
+mongoose.connect(MONGO_URI, {
+    serverSelectionTimeoutMS: 10000,
+    socketTimeoutMS: 45000,
+})
     .then(() => {
-        console.log('✓ MongoDB connected');
+        console.log('✓ MongoDB connected successfully');
         app.listen(PORT, () => {
-            console.log(`✓ Levora server running on http://localhost:${PORT}`);
+            console.log(`✓ Levora server running on port ${PORT}`);
         });
     })
     .catch(err => {
-        console.error('✗ MongoDB connection error:', err.message);
+        console.error('✗ MongoDB connection error:');
+        console.error(`  Message: ${err.message}`);
+        console.error(`  Code: ${err.code}`);
+        if (err.reason) console.error(`  Reason: ${err.reason}`);
         process.exit(1);
     });
