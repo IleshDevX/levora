@@ -3,7 +3,7 @@ const User = require('./models/User');
 const LeaveType = require('./models/LeaveType');
 const LeaveRequest = require('./models/LeaveRequest');
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/levora';
+const MONGO_URI = 'mongodb+srv://ileshpatel666_db_user:YBJh4qZM2qsZxnh3@levora.nwwavtx.mongodb.net/levora?retryWrites=true&w=majority&ssl=true';
 
 async function seed() {
     await mongoose.connect(MONGO_URI);
