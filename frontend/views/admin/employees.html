@@ -1,0 +1,176 @@
+<!-- Admin Employee Management -->
+<div class="levora-container">
+    <!-- Hero -->
+    <div class="levora-hero">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2><i class="bi bi-people me-2"></i>Employee Management</h2>
+                <p>Add, edit, and manage system users</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <button class="btn levora-btn-white" ng-click="openAddForm()">
+                    <i class="bi bi-person-plus me-1"></i>Add Employee
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="levora-card">
+        <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-search" style="color: var(--levora-text-muted);"></i>
+            <input type="text" class="levora-form-control" ng-model="searchQuery"
+                placeholder="Search by name, email, or role..." style="border: none; box-shadow: none; padding: 0;">
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div ng-if="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+
+    <!-- User Table -->
+    <div ng-if="!loading" class="levora-table-container">
+        <table class="table levora-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Department</th>
+                    <th>Manager</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="u in filteredUsers()">
+                    <td>{{$index + 1}}</td>
+                    <td><strong>{{u.name}}</strong></td>
+                    <td style="font-size: 0.82rem;">{{u.email}}</td>
+                    <td>
+                        <span class="levora-badge" ng-class="{
+                            'levora-badge-info': u.role === 'admin',
+                            'levora-badge-approved': u.role === 'manager',
+                            'levora-badge-pending': u.role === 'employee'
+                        }">{{u.role | uppercase}}</span>
+                    </td>
+                    <td>{{u.department || '—'}}</td>
+                    <td>{{u.managerId ? u.managerId.name : '—'}}</td>
+                    <td>
+                        <span class="levora-badge" ng-class="{
+                            'levora-badge-approved': u.status === 'active',
+                            'levora-badge-rejected': u.status === 'inactive'
+                        }">{{u.status}}</span>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <button class="btn levora-btn-primary levora-btn-sm" ng-click="openEditForm(u)">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn levora-btn-danger levora-btn-sm" ng-click="confirmDelete(u)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add/Edit Form Modal -->
+    <div ng-if="showForm" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center; overflow-y: auto;">
+        <div class="levora-card" style="max-width: 520px; margin: 20px; width: 100%;">
+            <h5 style="font-weight: 700; margin-bottom: 20px;">
+                <i class="bi me-2" ng-class="isEditing ? 'bi-pencil-square' : 'bi-person-plus'"></i>
+                {{isEditing ? 'Edit Employee' : 'Add New Employee'}}
+            </h5>
+
+            <div class="alert alert-danger rounded-3" ng-if="formError" style="font-size: 0.85rem;">
+                <i class="bi bi-exclamation-triangle me-2"></i>{{formError}}
+            </div>
+
+            <form ng-submit="saveUser()" novalidate>
+                <div class="levora-form-group">
+                    <label class="levora-form-label">Full Name *</label>
+                    <input type="text" class="levora-form-control" ng-model="formData.name" placeholder="Enter full name" required>
+                </div>
+
+                <div class="levora-form-group">
+                    <label class="levora-form-label">Email *</label>
+                    <input type="email" class="levora-form-control" ng-model="formData.email" placeholder="Enter email" required>
+                </div>
+
+                <div class="levora-form-group">
+                    <label class="levora-form-label">Password {{isEditing ? '(leave blank to keep)' : '*'}}</label>
+                    <input type="password" class="levora-form-control" ng-model="formData.password"
+                        placeholder="{{isEditing ? 'Leave blank to keep current' : 'Enter password'}}">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="levora-form-group">
+                            <label class="levora-form-label">Role *</label>
+                            <select class="levora-form-select" ng-model="formData.role" required>
+                                <option value="employee">Employee</option>
+                                <option value="manager">Manager</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="levora-form-group">
+                            <label class="levora-form-label">Department</label>
+                            <input type="text" class="levora-form-control" ng-model="formData.department" placeholder="Department">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="levora-form-group" ng-if="formData.role === 'employee'">
+                    <label class="levora-form-label">Assign Manager</label>
+                    <select class="levora-form-select" ng-model="formData.managerId">
+                        <option value="">No Manager</option>
+                        <option ng-repeat="mgr in managers" value="{{mgr._id}}">{{mgr.name}} ({{mgr.email}})</option>
+                    </select>
+                </div>
+
+                <div class="levora-form-group" ng-if="isEditing">
+                    <label class="levora-form-label">Status</label>
+                    <select class="levora-form-select" ng-model="formData.status">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn levora-btn-primary flex-grow-1">
+                        <i class="bi bi-check-lg me-1"></i>{{isEditing ? 'Update' : 'Create'}}
+                    </button>
+                    <button type="button" class="btn levora-btn-secondary" ng-click="closeForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation -->
+    <div ng-if="deleteTarget" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+        <div class="levora-card" style="max-width: 420px; margin: 20px;">
+            <h5 style="font-weight: 700; margin-bottom: 12px;">
+                <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Delete User?
+            </h5>
+            <p style="font-size: 0.88rem; color: var(--levora-text-muted);">
+                Are you sure you want to delete <strong>{{deleteTarget.name}}</strong> ({{deleteTarget.email}})?
+                This action cannot be undone.
+            </p>
+            <div class="d-flex gap-2 mt-4">
+                <button class="btn levora-btn-danger flex-grow-1" ng-click="deleteUser()">
+                    <i class="bi bi-trash me-1"></i>Delete
+                </button>
+                <button class="btn levora-btn-secondary" ng-click="cancelDelete()">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

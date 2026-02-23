@@ -1,0 +1,145 @@
+<!-- Admin Dashboard -->
+<div class="levora-container">
+    <!-- Hero -->
+    <div class="levora-hero">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2><i class="bi bi-speedometer2 me-2"></i>Admin Dashboard</h2>
+                <p>System-wide overview and leave analytics</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="#/admin/employees" class="btn levora-btn-white">
+                    <i class="bi bi-person-plus me-1"></i>Manage Employees
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-md-4 col-6">
+            <div class="levora-kpi-card">
+                <div class="levora-kpi-icon primary">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="levora-kpi-value">{{counts.totalEmployees || 0}}</div>
+                <div class="levora-kpi-label">Total Employees</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-6">
+            <div class="levora-kpi-card">
+                <div class="levora-kpi-icon info">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+                <div class="levora-kpi-value">{{counts.totalLeaves || 0}}</div>
+                <div class="levora-kpi-label">Total Requests</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-6">
+            <div class="levora-kpi-card">
+                <div class="levora-kpi-icon warning">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="levora-kpi-value">{{counts.pendingLeaves || 0}}</div>
+                <div class="levora-kpi-label">Pending</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-6">
+            <div class="levora-kpi-card">
+                <div class="levora-kpi-icon success">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="levora-kpi-value">{{counts.approvedLeaves || 0}}</div>
+                <div class="levora-kpi-label">Approved</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4 col-6">
+            <div class="levora-kpi-card">
+                <div class="levora-kpi-icon danger">
+                    <i class="bi bi-x-circle"></i>
+                </div>
+                <div class="levora-kpi-value">{{counts.rejectedLeaves || 0}}</div>
+                <div class="levora-kpi-label">Rejected</div>
+            </div>
+        </div>
+        <div class="col-md-4 col-6">
+            <div class="levora-kpi-card">
+                <div class="levora-kpi-icon success">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                <div class="levora-kpi-value">{{counts.approvedThisMonth || 0}}</div>
+                <div class="levora-kpi-label">Approved This Month</div>
+            </div>
+        </div>
+        <div class="col-md-4 col-12">
+            <div class="levora-kpi-card">
+                <div class="levora-kpi-icon danger">
+                    <i class="bi bi-calendar-x"></i>
+                </div>
+                <div class="levora-kpi-value">{{counts.rejectedThisMonth || 0}}</div>
+                <div class="levora-kpi-label">Rejected This Month</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="levora-card">
+                <div class="levora-card-header">
+                    <div>
+                        <h5 class="levora-card-title">Total Leaves Per Month</h5>
+                        <p class="levora-card-subtitle">Leave request trends for the current year</p>
+                    </div>
+                </div>
+                <div class="levora-chart-container">
+                    <canvas id="leavesChart"></canvas>
+                </div>
+                <div ng-if="loading" class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-lg-4">
+            <div class="levora-card" style="height: 100%;">
+                <div class="levora-card-header">
+                    <h5 class="levora-card-title">Recent Activity</h5>
+                </div>
+
+                <div ng-if="recentActivity.length === 0" class="levora-empty-state" style="padding: 30px 10px;">
+                    <i class="bi bi-activity d-block"></i>
+                    <p>No recent activity</p>
+                </div>
+
+                <div ng-if="recentActivity.length > 0">
+                    <div class="levora-activity-item" ng-repeat="item in recentActivity">
+                        <div class="levora-activity-dot" ng-class="{
+                            'pending': item.status === 'Pending',
+                            'approved': item.status === 'Approved',
+                            'rejected': item.status === 'Rejected'
+                        }"></div>
+                        <div class="flex-grow-1">
+                            <div style="font-size: 0.85rem;">
+                                <strong>{{item.employeeId.name}}</strong>
+                                <span style="color: var(--levora-text-muted);"> — {{item.leaveType}}</span>
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--levora-text-light);">
+                                {{item.startDate | formatDate}} ·
+                                <span class="levora-badge levora-badge-sm" ng-class="{
+                                    'levora-badge-pending': item.status === 'Pending',
+                                    'levora-badge-approved': item.status === 'Approved',
+                                    'levora-badge-rejected': item.status === 'Rejected'
+                                }" style="font-size: 0.65rem;">{{item.status}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

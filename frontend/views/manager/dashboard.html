@@ -1,0 +1,86 @@
+<!-- Manager Dashboard -->
+<div class="levora-container">
+    <!-- Hero -->
+    <div class="levora-hero">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2><i class="bi bi-people me-2"></i>Welcome, {{user.name}}!</h2>
+                <p>Manage your team's leave requests efficiently</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="#/manager/pending" class="btn levora-btn-white">
+                    <i class="bi bi-hourglass-split me-1"></i>View Pending
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4 col-6">
+            <div class="levora-kpi-card">
+                <div class="levora-kpi-icon primary">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="levora-kpi-value">{{counts.teamSize || 0}}</div>
+                <div class="levora-kpi-label">Team Size</div>
+            </div>
+        </div>
+        <div class="col-md-4 col-6">
+            <div class="levora-kpi-card">
+                <div class="levora-kpi-icon warning">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="levora-kpi-value">{{counts.pendingApprovals || 0}}</div>
+                <div class="levora-kpi-label">Pending Approvals</div>
+            </div>
+        </div>
+        <div class="col-md-4 col-12">
+            <div class="levora-kpi-card">
+                <div class="levora-kpi-icon success">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                <div class="levora-kpi-value">{{counts.teamLeavesThisMonth || 0}}</div>
+                <div class="levora-kpi-label">Team Leaves This Month</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Preview -->
+    <div class="levora-card">
+        <div class="levora-card-header">
+            <div>
+                <h5 class="levora-card-title">Pending Approvals Preview</h5>
+                <p class="levora-card-subtitle">Latest pending leave requests from your team</p>
+            </div>
+            <a href="#/manager/pending" class="btn levora-btn-secondary levora-btn-sm">View All</a>
+        </div>
+
+        <div ng-if="loading" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+
+        <div ng-if="!loading && pendingLeaves.length === 0" class="levora-empty-state">
+            <i class="bi bi-check-circle d-block" style="color: var(--levora-approved);"></i>
+            <h5>All caught up!</h5>
+            <p>No pending leave requests to review</p>
+        </div>
+
+        <div ng-if="!loading && pendingLeaves.length > 0">
+            <div class="levora-activity-item" ng-repeat="leave in pendingLeaves">
+                <div class="levora-activity-dot pending"></div>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>{{leave.employeeId.name}}</strong> — {{leave.leaveType}}
+                            <div style="font-size: 0.8rem; color: var(--levora-text-muted);">
+                                {{leave.startDate | formatDate}} to {{leave.endDate | formatDate}} · {{leave.reason}}
+                            </div>
+                        </div>
+                        <span class="levora-badge levora-badge-pending">Pending</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

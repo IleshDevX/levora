@@ -1,0 +1,77 @@
+<!-- Manager Team History -->
+<div class="levora-container">
+    <!-- Hero -->
+    <div class="levora-hero">
+        <h2><i class="bi bi-clock-history me-2"></i>Team Leave History</h2>
+        <p>Complete leave records of your team members</p>
+    </div>
+
+    <!-- Filter -->
+    <div class="levora-card">
+        <div class="d-flex align-items-center gap-3">
+            <label class="levora-form-label mb-0">Filter by Status:</label>
+            <select class="levora-form-select" ng-model="filterStatus" ng-change="applyFilter()"
+                style="max-width: 200px;">
+                <option value="">All</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div ng-if="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+
+    <!-- Empty -->
+    <div ng-if="!loading && leaves.length === 0" class="levora-card">
+        <div class="levora-empty-state">
+            <i class="bi bi-calendar-x d-block"></i>
+            <h5>No records found</h5>
+            <p>No leave history available for this filter</p>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div ng-if="!loading && leaves.length > 0" class="levora-table-container">
+        <table class="table levora-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Employee</th>
+                    <th>Leave Type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Days</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="leave in leaves">
+                    <td>{{$index + 1}}</td>
+                    <td>
+                        <strong>{{leave.employeeId.name}}</strong>
+                        <div style="font-size: 0.75rem; color: var(--levora-text-muted);">{{leave.employeeId.email}}</div>
+                    </td>
+                    <td><span class="levora-badge levora-badge-info">{{leave.leaveType}}</span></td>
+                    <td>{{leave.startDate | formatDate}}</td>
+                    <td>{{leave.endDate | formatDate}}</td>
+                    <td>{{leave.startDate | dayCount:leave.endDate}}</td>
+                    <td style="max-width: 180px;">{{leave.reason}}</td>
+                    <td>
+                        <span class="levora-badge" ng-class="{
+                            'levora-badge-pending': leave.status === 'Pending',
+                            'levora-badge-approved': leave.status === 'Approved',
+                            'levora-badge-rejected': leave.status === 'Rejected'
+                        }">{{leave.status}}</span>
+                    </td>
+                    <td>{{leave.managerComment || '—'}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

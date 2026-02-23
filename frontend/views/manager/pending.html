@@ -1,0 +1,100 @@
+<!-- Manager Pending Requests -->
+<div class="levora-container">
+    <!-- Hero -->
+    <div class="levora-hero">
+        <h2><i class="bi bi-hourglass-split me-2"></i>Pending Leave Requests</h2>
+        <p>Review and take action on your team's pending leave applications</p>
+    </div>
+
+    <!-- Loading -->
+    <div ng-if="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2 text-muted">Loading pending requests...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div ng-if="!loading && leaves.length === 0" class="levora-card">
+        <div class="levora-empty-state">
+            <i class="bi bi-check-circle d-block" style="color: var(--levora-approved);"></i>
+            <h5>No pending requests</h5>
+            <p>All leave requests have been processed</p>
+        </div>
+    </div>
+
+    <!-- Pending Table -->
+    <div ng-if="!loading && leaves.length > 0" class="levora-table-container">
+        <table class="table levora-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Employee</th>
+                    <th>Leave Type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Days</th>
+                    <th>Reason</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="leave in leaves">
+                    <td>{{$index + 1}}</td>
+                    <td>
+                        <strong>{{leave.employeeId.name}}</strong>
+                        <div style="font-size: 0.75rem; color: var(--levora-text-muted);">{{leave.employeeId.email}}</div>
+                    </td>
+                    <td><span class="levora-badge levora-badge-info">{{leave.leaveType}}</span></td>
+                    <td>{{leave.startDate | formatDate}}</td>
+                    <td>{{leave.endDate | formatDate}}</td>
+                    <td>{{leave.startDate | dayCount:leave.endDate}}</td>
+                    <td style="max-width: 200px;">{{leave.reason}}</td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <button class="btn levora-btn-success levora-btn-sm" ng-click="openAction(leave, 'approve')">
+                                <i class="bi bi-check-lg me-1"></i>Approve
+                            </button>
+                            <button class="btn levora-btn-danger levora-btn-sm" ng-click="openAction(leave, 'reject')">
+                                <i class="bi bi-x-lg me-1"></i>Reject
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Action Modal -->
+    <div ng-if="actionTarget" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+        <div class="levora-card" style="max-width: 460px; margin: 20px;">
+            <h5 style="font-weight: 700; margin-bottom: 16px;">
+                <i class="bi me-2" ng-class="actionType === 'approve' ? 'bi-check-circle text-success' : 'bi-x-circle text-danger'"></i>
+                {{actionType === 'approve' ? 'Approve' : 'Reject'}} Leave Request
+            </h5>
+            <div class="p-3 mb-3 rounded-3" style="background: var(--levora-bg); font-size: 0.85rem;">
+                <div><strong>Employee:</strong> {{actionTarget.employeeId.name}}</div>
+                <div><strong>Type:</strong> {{actionTarget.leaveType}}</div>
+                <div><strong>Period:</strong> {{actionTarget.startDate | formatDate}} to {{actionTarget.endDate | formatDate}}</div>
+                <div><strong>Reason:</strong> {{actionTarget.reason}}</div>
+            </div>
+
+            <div class="levora-form-group">
+                <label class="levora-form-label">
+                    Comment {{actionType === 'reject' ? '*' : '(Optional)'}}
+                </label>
+                <textarea class="levora-form-control" ng-model="comment" rows="3"
+                    placeholder="Add your comment..."></textarea>
+            </div>
+
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn flex-grow-1"
+                    ng-class="actionType === 'approve' ? 'levora-btn-success' : 'levora-btn-danger'"
+                    ng-click="performAction()">
+                    <i class="bi me-1" ng-class="actionType === 'approve' ? 'bi-check-lg' : 'bi-x-lg'"></i>
+                    {{actionType === 'approve' ? 'Approve' : 'Reject'}}
+                </button>
+                <button class="btn levora-btn-secondary" ng-click="cancelAction()">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+<!-- Login Page -->
+<div class="levora-login-page">
+    <div class="levora-login-card">
+        <div class="levora-login-logo">
+            <i class="bi bi-layers-fill"></i>
+            <h1>Levora</h1>
+            <p>Elevating workforce leave management</p>
+        </div>
+
+        <div class="alert alert-danger rounded-3" ng-if="loginError" style="font-size: 0.85rem;">
+            <i class="bi bi-exclamation-triangle me-2"></i>{{loginError}}
+        </div>
+
+        <form ng-submit="login()" novalidate>
+            <div class="levora-form-group">
+                <label class="levora-form-label">Email Address</label>
+                <input type="email" class="levora-form-control" ng-model="credentials.email"
+                    placeholder="Enter your email" required autofocus>
+            </div>
+
+            <div class="levora-form-group">
+                <label class="levora-form-label">Password</label>
+                <input type="password" class="levora-form-control" ng-model="credentials.password"
+                    placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="btn levora-btn-primary levora-login-btn mt-2" ng-disabled="isSubmitting">
+                <span ng-if="!isSubmitting">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                </span>
+                <span ng-if="isSubmitting">
+                    <span class="spinner-border spinner-border-sm me-2"></span>Signing in...
+                </span>
+            </button>
+        </form>
+
+        <div class="text-center mt-4" style="font-size: 0.78rem; color: var(--levora-text-light);">
+            <i class="bi bi-shield-lock me-1"></i>Secure session-based authentication
+        </div>
+    </div>
+</div>

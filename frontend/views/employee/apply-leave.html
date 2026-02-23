@@ -1,0 +1,84 @@
+<!-- Apply / Edit Leave Form -->
+<div class="levora-container">
+    <!-- Hero -->
+    <div class="levora-hero">
+        <h2><i class="bi me-2" ng-class="isEdit ? 'bi-pencil-square' : 'bi-plus-circle'"></i>{{isEdit ? 'Edit Leave Request' : 'Apply for Leave'}}</h2>
+        <p>{{isEdit ? 'Update your pending leave request details' : 'Fill in the details below to submit a new leave request'}}</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="levora-card">
+                <div class="levora-card-header">
+                    <h5 class="levora-card-title">
+                        <i class="bi bi-file-earmark-text me-2"></i>Leave Details
+                    </h5>
+                </div>
+
+                <!-- Error Message -->
+                <div class="alert alert-danger rounded-3" ng-if="formError" style="font-size: 0.85rem;">
+                    <i class="bi bi-exclamation-triangle me-2"></i>{{formError}}
+                </div>
+
+                <form ng-submit="submitLeave()" name="leaveForm" novalidate>
+                    <!-- Leave Type -->
+                    <div class="levora-form-group">
+                        <label class="levora-form-label">Leave Type *</label>
+                        <select class="levora-form-select" ng-model="leave.leaveType" required>
+                            <option value="">Select leave type</option>
+                            <option ng-repeat="type in leaveTypes" value="{{type.code}}">
+                                {{type.name}} ({{type.code}}) — {{type.yearlyLimit}} days/year
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Date Range -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="levora-form-group">
+                                <label class="levora-form-label">Start Date *</label>
+                                <input type="date" class="levora-form-control" ng-model="leave.startDate" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="levora-form-group">
+                                <label class="levora-form-label">End Date *</label>
+                                <input type="date" class="levora-form-control" ng-model="leave.endDate" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Duration Info -->
+                    <div class="mb-3 p-3 rounded-3" style="background: var(--levora-info-bg); font-size: 0.85rem;"
+                        ng-if="leave.startDate && leave.endDate">
+                        <i class="bi bi-info-circle me-2" style="color: var(--levora-info);"></i>
+                        <strong>Duration:</strong> {{leave.startDate | dayCount:leave.endDate}} day(s)
+                    </div>
+
+                    <!-- Reason -->
+                    <div class="levora-form-group">
+                        <label class="levora-form-label">Reason *</label>
+                        <textarea class="levora-form-control" ng-model="leave.reason" rows="3"
+                            placeholder="Please provide a reason for your leave..." required></textarea>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn levora-btn-primary flex-grow-1" ng-disabled="isSubmitting">
+                            <span ng-if="!isSubmitting">
+                                <i class="bi me-1" ng-class="isEdit ? 'bi-check-lg' : 'bi-send'"></i>
+                                {{isEdit ? 'Update Request' : 'Submit Request'}}
+                            </span>
+                            <span ng-if="isSubmitting">
+                                <span class="spinner-border spinner-border-sm me-2"></span>Submitting...
+                            </span>
+                        </button>
+                        <button type="button" class="btn levora-btn-secondary" ng-click="cancel()">
+                            <i class="bi bi-x-lg me-1"></i>Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

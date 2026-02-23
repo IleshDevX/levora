@@ -1,0 +1,108 @@
+<!-- Admin Leave Types Management -->
+<div class="levora-container">
+    <!-- Hero -->
+    <div class="levora-hero">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2><i class="bi bi-tags me-2"></i>Leave Type Configuration</h2>
+                <p>Create and manage leave types with yearly limits</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <button class="btn levora-btn-white" ng-click="openAddForm()">
+                    <i class="bi bi-plus-circle me-1"></i>Add Leave Type
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div ng-if="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+
+    <!-- Empty -->
+    <div ng-if="!loading && leaveTypes.length === 0" class="levora-card">
+        <div class="levora-empty-state">
+            <i class="bi bi-tags d-block"></i>
+            <h5>No leave types configured</h5>
+            <p>Create your first leave type to get started</p>
+        </div>
+    </div>
+
+    <!-- Leave Types Cards -->
+    <div ng-if="!loading && leaveTypes.length > 0" class="row g-4">
+        <div class="col-md-4" ng-repeat="type in leaveTypes">
+            <div class="levora-kpi-card">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="levora-kpi-icon primary">
+                        <i class="bi bi-calendar2-week"></i>
+                    </div>
+                    <div class="d-flex gap-1">
+                        <button class="btn levora-btn-primary levora-btn-sm" ng-click="openEditForm(type)" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" ng-click="deleteLeaveType(type)" title="Delete" style="border-radius: 8px;">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <h5 style="font-weight: 700; margin-bottom: 4px;">{{type.name}}</h5>
+                <span class="levora-badge levora-badge-info mb-3" style="display: inline-block;">{{type.code}}</span>
+                <div class="levora-kpi-value" style="color: var(--levora-primary);">{{type.yearlyLimit}}</div>
+                <div class="levora-kpi-label">Days Per Year</div>
+                <div ng-if="type.description" style="margin-top: 12px; font-size: 0.82rem; color: var(--levora-text-muted);">
+                    {{type.description}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Form Modal -->
+    <div ng-if="showForm" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+        <div class="levora-card" style="max-width: 460px; margin: 20px; width: 100%;">
+            <h5 style="font-weight: 700; margin-bottom: 20px;">
+                <i class="bi me-2" ng-class="isEditing ? 'bi-pencil-square' : 'bi-plus-circle'"></i>
+                {{isEditing ? 'Edit Leave Type' : 'Create Leave Type'}}
+            </h5>
+
+            <div class="alert alert-danger rounded-3" ng-if="formError" style="font-size: 0.85rem;">
+                <i class="bi bi-exclamation-triangle me-2"></i>{{formError}}
+            </div>
+
+            <form ng-submit="saveLeaveType()" novalidate>
+                <div class="levora-form-group">
+                    <label class="levora-form-label">Leave Type Name *</label>
+                    <input type="text" class="levora-form-control" ng-model="formData.name"
+                        placeholder="e.g., Casual Leave" required>
+                </div>
+
+                <div class="levora-form-group">
+                    <label class="levora-form-label">Code * {{isEditing ? '(cannot change)' : ''}}</label>
+                    <input type="text" class="levora-form-control" ng-model="formData.code"
+                        placeholder="e.g., CL" ng-disabled="isEditing" required
+                        style="text-transform: uppercase;">
+                </div>
+
+                <div class="levora-form-group">
+                    <label class="levora-form-label">Yearly Limit (days) *</label>
+                    <input type="number" class="levora-form-control" ng-model="formData.yearlyLimit"
+                        placeholder="e.g., 12" min="0" required>
+                </div>
+
+                <div class="levora-form-group">
+                    <label class="levora-form-label">Description</label>
+                    <textarea class="levora-form-control" ng-model="formData.description" rows="2"
+                        placeholder="Brief description (optional)"></textarea>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn levora-btn-primary flex-grow-1">
+                        <i class="bi bi-check-lg me-1"></i>{{isEditing ? 'Update' : 'Create'}}
+                    </button>
+                    <button type="button" class="btn levora-btn-secondary" ng-click="closeForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
